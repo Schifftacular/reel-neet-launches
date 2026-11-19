@@ -1,0 +1,533 @@
+{
+  "v": "0.1",
+  "mission_id": "starship-flight-15",
+  "name": "Starship Flight 15",
+  "t0_utc": "2026-11-13T22:47:36Z",
+  "generated": "2026-11-19T03:32:08Z",
+  "source": "spacex-published",
+  "caveat": "Times are SpaceX's published Flight 15 timeline (as reproduced on Wikipedia). Webcast start is uncertain (sources say T-49 or T-42); the rundown takes it at T-45.",
+  "mission_file": "../missions/starship-flight-15.json",
+  "t0_historic_utc": "2026-11-13T22:47:36Z",
+  "replay": {
+    "vod_t0": null,
+    "note": "Set vod_t0 to the VOD position (seconds) where the webcast clock reads T-0, so the hub can sync without OCR (POST /operator replay_sync)."
+  },
+  "mission": {
+    "customer": "SpaceX (Starlink Group 31-2, 26 Starlink V3)",
+    "vehicle": "Starship Block 3 (Super Heavy + Ship)",
+    "booster": {
+      "serial": "B22",
+      "flight": 1,
+      "name": "Booster 22"
+    },
+    "ship": {
+      "serial": "S42",
+      "name": "Don't Panic"
+    },
+    "pad": {
+      "site": "Starbase, Texas",
+      "pad": "OLP-2",
+      "tz": "America/Chicago"
+    },
+    "landing": {
+      "type": "tower_catch",
+      "name": "OLP-2 chopsticks",
+      "short": "TOWER CATCH"
+    },
+    "orbit": "LEO ~276 x 278 km, 30.5 deg",
+    "webcast": {
+      "primary": "https://www.spacex.com/launches/starship-flight-15",
+      "x_broadcast": "https://x.com/SpaceX",
+      "expected_start_offset_s": -2700,
+      "expected_end": "Launch-day coverage ran through payload deploy (~T+1:18). The ship catch was a separate webcast the next afternoon."
+    },
+    "actual": {
+      "result": "Ship 42 reached orbit, deployed all 26 Starlink V3, flew ~14 orbits and was caught by the OLP-2 chopsticks at T+22:32:28 (first ship recovered from orbit). Booster 22 had 32 of 33 engines on boostback, the automated criteria called off the catch, it diverted to a Gulf contingency splashdown and was destroyed (per Wikipedia, citing SpaceX posts).",
+      "holds": "None reported. Window moved from 22:45 to 22:47 UTC."
+    }
+  },
+  "milestones": [
+    {
+      "id": "go_prop_load",
+      "label": "GO FOR PROPELLANT LOAD",
+      "t": -3000,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "494c73"
+    },
+    {
+      "id": "prop_load",
+      "label": "BOOSTER + SHIP PROP LOAD",
+      "t": -2133,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "c8c7c9"
+    },
+    {
+      "id": "engine_chill",
+      "label": "ENGINE CHILL",
+      "t": -1300,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "60aaac"
+    },
+    {
+      "id": "booster_load_done",
+      "label": "BOOSTER PROP LOAD COMPLETE",
+      "t": -170,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "1a1b14"
+    },
+    {
+      "id": "ship_load_done",
+      "label": "SHIP PROP LOAD COMPLETE",
+      "t": -130,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "36ca66"
+    },
+    {
+      "id": "go_for_launch",
+      "label": "GO FOR LAUNCH",
+      "t": -30,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "d5ac67"
+    },
+    {
+      "id": "flame_diverter",
+      "label": "FLAME DIVERTER",
+      "t": -17,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "ignition",
+      "label": "SUPER HEAVY IGNITION",
+      "t": -3,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "liftoff",
+      "label": "LIFTOFF",
+      "t": 0,
+      "ocr": true,
+      "ocr_text": "LIFTOFF",
+      "rundown_event_id": "3e98aa"
+    },
+    {
+      "id": "maxq",
+      "label": "MAX-Q",
+      "t": 58,
+      "ocr": true,
+      "ocr_text": "MAX-Q",
+      "rundown_event_id": "bfdd8d"
+    },
+    {
+      "id": "meco",
+      "label": "MECO",
+      "t": 139,
+      "ocr": true,
+      "ocr_text": "MECO",
+      "rundown_event_id": "976313"
+    },
+    {
+      "id": "stage_sep",
+      "label": "HOT STAGING",
+      "t": 141,
+      "ocr": true,
+      "ocr_text": "HOT STAGING",
+      "rundown_event_id": "73b4e9"
+    },
+    {
+      "id": "boostback_start",
+      "label": "BOOSTBACK BURN",
+      "t": 146,
+      "ocr": true,
+      "ocr_text": "BOOSTBACK",
+      "rundown_event_id": "37ff9e"
+    },
+    {
+      "id": "boostback_end",
+      "label": "Boostback complete: booster coast",
+      "t": 182,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "bf4897"
+    },
+    {
+      "id": "landing_start",
+      "label": "BOOSTER LANDING BURN",
+      "t": 370,
+      "ocr": true,
+      "ocr_text": "LANDING BURN",
+      "rundown_event_id": "ccbd7f"
+    },
+    {
+      "id": "landing",
+      "label": "BOOSTER CATCH",
+      "t": 395,
+      "ocr": true,
+      "ocr_text": "CATCH",
+      "rundown_event_id": "5198b4"
+    },
+    {
+      "id": "seco1",
+      "label": "SHIP SECO",
+      "t": 489,
+      "ocr": true,
+      "ocr_text": "SECO",
+      "rundown_event_id": "5e0021"
+    },
+    {
+      "id": "ship_relight",
+      "label": "ORBITAL INSERTION BURN (ship relight)",
+      "t": 1570,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "9e4615"
+    },
+    {
+      "id": "ship_relight_end",
+      "label": "INSERTION BURN END",
+      "t": 1590,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "deploy",
+      "label": "PAYLOAD DEPLOY START",
+      "t": 2101,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "ae9d98"
+    },
+    {
+      "id": "deploy_complete",
+      "label": "PAYLOAD DEPLOY COMPLETE",
+      "t": 4660,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": "6f3029"
+    },
+    {
+      "id": "return_check_hawaii_early",
+      "label": "EARLY HAWAII RETURN CHECK",
+      "t": 5266,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "return_check_chile",
+      "label": "MID CHILE RETURN CHECK",
+      "t": 26135,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "return_check_hawaii_final",
+      "label": "FINAL HAWAII RETURN CHECK",
+      "t": 74515,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "deorbit_start",
+      "label": "DEORBIT BURN",
+      "t": 77757,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "deorbit_end",
+      "label": "DEORBIT BURN END",
+      "t": 77767,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "reentry",
+      "label": "SHIP ENTRY",
+      "t": 80446,
+      "ocr": true,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "transonic",
+      "label": "TRANSONIC",
+      "t": 81574,
+      "ocr": true,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "subsonic",
+      "label": "SUBSONIC",
+      "t": 81613,
+      "ocr": true,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "ship_landing_burn",
+      "label": "SHIP LANDING BURN",
+      "t": 81736,
+      "ocr": true,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "ship_flip",
+      "label": "LANDING FLIP",
+      "t": 81738,
+      "ocr": false,
+      "ocr_text": "",
+      "rundown_event_id": null
+    },
+    {
+      "id": "ship_landing",
+      "label": "SHIP CATCH",
+      "t": 81748,
+      "ocr": true,
+      "ocr_text": "",
+      "rundown_event_id": null
+    }
+  ],
+  "segments": [
+    {
+      "id": "5fd74c",
+      "key": "show.crew_call",
+      "title": "Crew call: systems up",
+      "t": -6300,
+      "gfx": "SLATE_HOLD"
+    },
+    {
+      "id": "52d6f3",
+      "key": "show.signal_check",
+      "title": "Signal check",
+      "t": -5700,
+      "gfx": "SLATE_HOLD"
+    },
+    {
+      "id": "27a4ab",
+      "key": "show.rehearsal",
+      "title": "Graphics rehearsal (test data)",
+      "t": -5100,
+      "gfx": "ALL_TEST"
+    },
+    {
+      "id": "b6289b",
+      "key": "show.standby",
+      "title": "Standby: holding slate",
+      "t": -4200,
+      "gfx": "SLATE_COUNTDOWN"
+    },
+    {
+      "id": "1f362e",
+      "key": "show.open",
+      "title": "OPEN: headline + live clock",
+      "t": -3600,
+      "gfx": "OPEN"
+    },
+    {
+      "id": "58084a",
+      "key": "show.mission_brief",
+      "title": "Mission brief: Flight 15",
+      "t": -3300,
+      "gfx": "MISSION_CARD"
+    },
+    {
+      "id": "494c73",
+      "key": "go_prop_load",
+      "title": "GO FOR PROPELLANT LOAD",
+      "t": -3000,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "a95bc9",
+      "key": "show.take_webcast",
+      "title": "TAKE SPACEX WEBCAST",
+      "t": -2700,
+      "gfx": "CLOCK_FULL"
+    },
+    {
+      "id": "c8c7c9",
+      "key": "prop_load",
+      "title": "BOOSTER + SHIP PROP LOAD",
+      "t": -2133,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "d30ba0",
+      "key": "show.vehicles",
+      "title": "Vehicles: B22 + S42 Don't Panic",
+      "t": -1800,
+      "gfx": "VEHICLE_CARD"
+    },
+    {
+      "id": "60aaac",
+      "key": "engine_chill",
+      "title": "ENGINE CHILL",
+      "t": -1300,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "d3740a",
+      "key": "show.map",
+      "title": "Flight profile map",
+      "t": -1200,
+      "gfx": "MAP_TRAJECTORY"
+    },
+    {
+      "id": "555373",
+      "key": "show.pad",
+      "title": "Pad + tower: OLP-2 chopsticks",
+      "t": -600,
+      "gfx": "PAD_CARD"
+    },
+    {
+      "id": "1a1b14",
+      "key": "booster_load_done",
+      "title": "BOOSTER PROP LOAD COMPLETE",
+      "t": -170,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "36ca66",
+      "key": "ship_load_done",
+      "title": "SHIP PROP LOAD COMPLETE",
+      "t": -130,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "d5ac67",
+      "key": "go_for_launch",
+      "title": "GO FOR LAUNCH",
+      "t": -30,
+      "gfx": "CLOCK_FULL"
+    },
+    {
+      "id": "3e98aa",
+      "key": "liftoff",
+      "title": "LIFTOFF",
+      "t": 0,
+      "gfx": "LIFTOFF"
+    },
+    {
+      "id": "bfdd8d",
+      "key": "maxq",
+      "title": "MAX-Q",
+      "t": 58,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "976313",
+      "key": "meco",
+      "title": "MECO",
+      "t": 139,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "73b4e9",
+      "key": "stage_sep",
+      "title": "HOT STAGING",
+      "t": 141,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "37ff9e",
+      "key": "boostback_start",
+      "title": "BOOSTBACK BURN",
+      "t": 146,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "bf4897",
+      "key": "boostback_end",
+      "title": "Boostback complete: booster coast",
+      "t": 182,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "ccbd7f",
+      "key": "landing_start",
+      "title": "BOOSTER LANDING BURN",
+      "t": 370,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "5198b4",
+      "key": "landing",
+      "title": "BOOSTER CATCH",
+      "t": 395,
+      "gfx": "LANDING"
+    },
+    {
+      "id": "5e0021",
+      "key": "seco1",
+      "title": "SHIP SECO",
+      "t": 489,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "68731c",
+      "key": "show.recap_ascent",
+      "title": "Ascent recap + replays",
+      "t": 560,
+      "gfx": "RECAP_CARD"
+    },
+    {
+      "id": "9e4615",
+      "key": "ship_relight",
+      "title": "ORBITAL INSERTION BURN (ship relight)",
+      "t": 1570,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "e31792",
+      "key": "show.coast",
+      "title": "Coast: what's next",
+      "t": 1590,
+      "gfx": "MAP_TRAJECTORY"
+    },
+    {
+      "id": "ae9d98",
+      "key": "deploy",
+      "title": "PAYLOAD DEPLOY START",
+      "t": 2101,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "488c26",
+      "key": "show.starlink",
+      "title": "Starlink V3 segment",
+      "t": 2700,
+      "gfx": "MISSION_CARD"
+    },
+    {
+      "id": "6f3029",
+      "key": "deploy_complete",
+      "title": "PAYLOAD DEPLOY COMPLETE",
+      "t": 4660,
+      "gfx": "EVENT_BUG"
+    },
+    {
+      "id": "8b8872",
+      "key": "show.outro",
+      "title": "Wrap: catch tomorrow",
+      "t": 4800,
+      "gfx": "OUTRO"
+    }
+  ]
+}
