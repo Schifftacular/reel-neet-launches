@@ -64,6 +64,13 @@ python -m ingest.run --source ffmpeg --input flight15.mp4 --realtime --fps 2 --h
   --profile profiles/spacex_starship.json --timeline ../launch-runtime/out/starship-flight-15.timeline.json
 ```
 
+Watch it work: `--preview` serves a live view at http://127.0.0.1:8090/ showing each frame the ingest reads, every OCR box (green = read, amber = read but rejected, red = nothing), the parsed values, which vehicle each box is routed to, the locked clock and the latest milestones. Pair it with `--realtime` so it plays at normal speed:
+
+```
+python -m ingest.run --source ffmpeg --input flight15_clip.mp4 --realtime --preview --fps 2 \
+  --profile profiles/spacex_starship.json --timeline timelines/starship-flight-15.timeline.json
+```
+
 Rehearse graphics without a stream by replaying a recorded run into the hub:
 
 ```
