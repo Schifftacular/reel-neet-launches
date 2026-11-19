@@ -9,6 +9,22 @@ from dataclasses import dataclass, field
 MAX_RATE = {"speed": 350.0, "alt": 12.0}      # km/h per s (~10 g), km per s
 ACCEL_WIN = 3.0                                 # seconds for derivative fit
 ACQUIRE_GAP = 10.0                              # no good read for this long -> re-acquire
+STALE_SECS = 3.0                                # snapshot stops reporting a channel this long after its last read
+# Digits Tesseract confuses on the SpaceX font. Flight 15: a leading 5 read as 9 on clean crops
+# (5932 -> 9932, 5x.x km -> 9x.x km) at confidence 0.87, consistently, for 30 s at a time.
+CONFUSABLE = {"5": "96", "9": "5", "8": "306", "3": "8", "6": "85", "0": "8", "1": "7", "7": "1"}
+
+
+def _alternates(v: float, kind: str):
+    s = f"{int(round(v))}" if kind == "speed" else f"{v:.1f}"
+    for i, ch in enumerate(s):
+        for alt in CONFUSABLE.get(ch, ""):
+            if i == 0 and alt == "0":
+                continue
+            try:
+                yield float(s[:i] + alt + s[i + 1:])
+            except ValueError:
+                pass
 
 
 @dataclass
@@ -17,10 +33,46 @@ class Channel:
     last: tuple[float, float] | None = None
     rejects: list = field(default_factory=list)
     hist: deque = field(default_factory=lambda: deque(maxlen=40))
+    corrected: int = 0
 
-    def push(self, t: float, v: float | None) -> float | None:
+    def _ok(self, t: float, v: float, slack: float = 1.0) -> bool:
+        lt, lv = self.last
+        dt = max(t - lt, 0.25)
+        return abs(v - lv) <= slack * MAX_RATE[self.kind] * dt + (5 if self.kind == "speed" else 0.5)
+
+    def _tight(self, pred: float) -> float:
+        return max(0.03 * abs(pred), 40.0 if self.kind == "speed" else 1.5)
+
+    def _predict(self, t: float) -> float:
+        lt, lv = self.last
+        r = self.rate() or 0.0
+        return lv + r * (t - lt)
+
+    def push(self, t: float, v: float | None, weak: bool = False) -> float | None:
+        """weak=True: a low-confidence read. Used only to continue an acquired channel, and only
+        when it sits close to where the channel is heading (it can never acquire or re-acquire)."""
         if v is None:
             return None
+        acquired = self.last is not None and t - self.last[0] <= ACQUIRE_GAP
+        if weak:
+            if not acquired:
+                return None
+            pred = self._predict(t)
+            if abs(v - pred) > self._tight(pred):
+                return None
+            self.last = (t, v)
+            self.hist.append((t, v))
+            return v
+        if acquired and not self._ok(t, v):
+            # A misread digit? Take the one-digit lookalike that fits the track, if exactly one does.
+            # Only a lookalike that lands close to the prediction counts: a real jump the gate was
+            # wrong about must not be bent into a nearby lookalike.
+            pred = self._predict(t)
+            fits = sorted((abs(a - pred), a) for a in _alternates(v, self.kind)
+                          if abs(a - pred) <= self._tight(pred))
+            if fits and (len(fits) == 1 or fits[1][0] > 3 * fits[0][0]):
+                v = fits[0][1]
+                self.corrected += 1
         if self.last is None or t - self.last[0] > ACQUIRE_GAP:
             # (Re)acquire only on 3 consistent reads. Real footage: gauge icons read as lone
             # digits ('4', '7', '6') while a field was off screen.
@@ -47,8 +99,10 @@ class Channel:
         self.hist.append((t, v))
         return v
 
-    def value(self) -> float | None:
+    def value(self, now: float | None = None) -> float | None:
         if not self.hist:
+            return None
+        if now is not None and now - self.hist[-1][0] > STALE_SECS:
             return None
         vals = sorted(v for _, v in list(self.hist)[-3:])
         return vals[len(vals) // 2]
@@ -106,10 +160,15 @@ class VehicleTracker:
             out.append(("vehicle.status", {"stage": stage, "phase": ph, "prev": self.phase[stage]}))
             self.phase[stage] = ph
 
-    def update(self, t: float, mt: float | None, raw: dict[str, float | None]) -> list[tuple[str, dict]]:
+    def update(self, t: float, mt: float | None, raw: dict[str, float | None],
+               weak: dict[str, float | None] | None = None) -> list[tuple[str, dict]]:
         out: list[tuple[str, dict]] = []
+        weak = weak or {}
         for k, ch in self.ch.items():
-            ch.push(t, raw.get(k))
+            if raw.get(k) is not None:
+                ch.push(t, raw[k])
+            elif weak.get(k) is not None:
+                ch.push(t, weak[k], weak=True)
         if mt is None:
             return out
         v1, h1 = self.ch["s1_speed"].value(), self.ch["s1_alt"].value()
@@ -191,13 +250,26 @@ class VehicleTracker:
         self.prev_mt = mt
         return out
 
+    def stack_ended(self, t: float, mt: float | None) -> list[tuple[str, dict]]:
+        """Starship hot staging: the overlay stops showing one stacked vehicle and splits it.
+        The stack's speed never visibly drops before the ship lights, so MECO is taken as the
+        peak of the stack speed, back-dated, when the split happens."""
+        out: list[tuple[str, dict]] = []
+        h = self.ch["s1_speed"].hist
+        if mt is None or "liftoff" not in self.done or "meco" in self.done or not h:
+            return out
+        tp, vp = max(h, key=lambda p: p[1])
+        if vp > 3000:
+            self._hit(out, "meco", self._mt(tp, t, mt), 0.75, by="stack_split", s1_speed=vp)
+            self._phase(out, "s1", "coast")
+        return out
+
     @staticmethod
     def _mt(tp: float, t: float, mt: float) -> float:
         """Mission time of an earlier media timestamp (clock runs 1:1 in flight)."""
         return mt - (t - tp)
 
-    def snapshot(self) -> dict:
-        s = {}
-        for k, ch in self.ch.items():
-            s[k] = ch.value()
-        return s
+    def snapshot(self, now: float | None = None) -> dict:
+        """Current values; a channel with no accepted read for STALE_SECS reports None, so a gauge
+        that left the screen (or was replaced by an engine diagram) isn't shown frozen."""
+        return {k: ch.value(now) for k, ch in self.ch.items()}

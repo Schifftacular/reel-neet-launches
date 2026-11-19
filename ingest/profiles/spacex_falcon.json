@@ -50,5 +50,6 @@
   "units": {
     "speed": "km/h",
     "alt": "km"
-  }
+  },
+  "clock_countdown": "floor"
 }

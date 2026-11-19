@@ -101,6 +101,21 @@ Run on Mike's iMac against a downloaded Starship flight webcast (1,630 frames at
 - Altitude fields require a decimal below 100 km (`decimal_below`), which caught most icon reads there.
 - **The Starship bar rearranges by phase.** At T+7:13 the ship moves into the left boxes where the booster was, and some fields are replaced by engine diagrams for minutes at a time. A fixed box-to-vehicle mapping is wrong for Starship; a per-phase mapping is still to do. The Falcon 9 layout still needs its own check on a Falcon VOD.
 
+## Real-footage test (Starship Flight 15, 2026-11-19)
+
+Batch run over a 30-minute clip (T-5:00 to T+25:00) on the iMac, 5.9 frames/s.
+
+- Clock locked at T-25 s (before T-0:28 the count sits in a top-left banner we don't read). No false jumps.
+- Layout switches (stack, ship, booster by panel title, ship to the left) all landed within about 5 s of the screen. No ship numbers reached the booster channel.
+- Liftoff and SECO were exact (SECO +4 s against the plan).
+- **Tesseract reads a leading 5 as 9 on the SpaceX font**, even on clean crops at confidence 0.87 (5932 as 9932, 5x.x km as 9x.x km). That put about 60 wrong speeds out and spoiled MECO. Fix: when a reading breaks the physical rate limit, `vehicle.Channel` tries one-digit lookalikes (5/9, 8/3/6/0, 1/7) and keeps one only if it lands within 3% of where the track is heading.
+- The countdown display floors (T-00:00:00 stays up for a full second), so the clock model ran about 1 s early. Profiles now say `"clock_countdown": "floor"`.
+- MECO on Starship (hot staging): the stack's speed never visibly drops, so MECO is now the peak of the stack speed, taken when the overlay splits the stack into booster and ship.
+- Gauges replaced by engine diagrams kept their last value. Channels now go blank after 3 s with no accepted read.
+- Booster speed read correctly but at confidence 0.1 to 0.37 for about a minute. Such reads may now continue an acquired track if they are within 3% of its prediction; they can never start one.
+
+Synthetic regression after these changes: every milestone within 2 s of truth. The clock error shows 0.25 s because synthetic frames land exactly on the display tick, while real video lands on average 0.25 s after it.
+
 ## Known gaps
 
 - Overlay milestone text ("MAX-Q", "MECO" on SpaceX's timeline arc) isn't read yet. The timeline already carries `ocr_text` for it, so it is the next cross-check to add.

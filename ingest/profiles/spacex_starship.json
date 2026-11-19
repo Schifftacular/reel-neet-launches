@@ -124,5 +124,6 @@
   "milestone_drop": [
     "entry_start",
     "entry_end"
-  ]
+  ],
+  "clock_countdown": "floor"
 }

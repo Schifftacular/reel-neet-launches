@@ -14,6 +14,13 @@ TOL = 1.6          # seconds of disagreement tolerated before a reading is "off-
 RELOCK_N = 3       # consecutive agreeing off-lock readings needed to re-lock
 HOLD_SECS = 3.5    # reading frozen for this long while counting down -> HOLD
 LOST_SECS = 20.0   # no valid reading for this long -> LOST
+# Offsets are only updated on the first frame showing a new value, which arrives 0-0.5 s
+# (at 2 fps) after the display ticked. Where it ticked depends on how the overlay rounds:
+#   floor in flight (T+5 shows from 5.0)                       -> true time ~ reading + 0.25
+#   ceil in countdown (T-25 shows from -25.0, synthetic tests) -> reading + 0.25
+#   floor in countdown (SpaceX: T-25 shows from -26.0, and
+#   T-00:00:00 is on screen for a full second)                 -> reading - 0.75
+TICK_LAG = 0.25
 
 
 @dataclass
@@ -24,6 +31,14 @@ class ClockModel:
     last_valid_t: float | None = None
     _off: deque = field(default_factory=lambda: deque(maxlen=RELOCK_N))
     _frozen_since: tuple[float, float] | None = None   # (media_t, value)
+    countdown_floor: bool = False      # profile "clock_countdown": "floor" (SpaceX)
+
+    def _true(self, reading: float) -> float:
+        """Best estimate of the true mission time on the first frame showing `reading`."""
+        neg = reading < 0 or (reading == 0 and str(reading).startswith("-"))
+        if neg and self.countdown_floor:
+            return reading - 1.0 + TICK_LAG
+        return reading + TICK_LAG
 
     def mission_time(self, t: float) -> float | None:
         if self.state == "hold":
@@ -76,26 +91,27 @@ class ClockModel:
 
         if self.state == "hold":
             # clock moving again -> resume; re-lock immediately on this reading
-            self.offset = reading - t
+            self.offset = self._true(reading) - t
             self._off.clear()
             self.held_value = None
             self.state = "countdown" if reading < 0 else "flight"
             ev.append(("clock.state", {"state": self.state, "prev": "hold", "resumed_at": reading}))
             return ev
 
+        rt = self._true(reading)
         if self.offset is None:
-            self._off.append(reading - t)
+            self._off.append(rt - t)
             if len(self._off) == RELOCK_N and max(self._off) - min(self._off) <= TOL:
                 self.offset = sorted(self._off)[len(self._off) // 2]
                 self._off.clear()
                 ev.append(("clock.lock", {"mission_time": round(t + self.offset, 2)}))
         else:
-            resid = reading - (t + self.offset)
+            resid = rt - (t + self.offset)
             if abs(resid) <= TOL:
                 self.offset += 0.2 * resid      # gentle correction
                 self._off.clear()
             else:
-                self._off.append(reading - t)
+                self._off.append(rt - t)
                 if len(self._off) == RELOCK_N and max(self._off) - min(self._off) <= TOL:
                     old = t + self.offset
                     self.offset = sorted(self._off)[len(self._off) // 2]

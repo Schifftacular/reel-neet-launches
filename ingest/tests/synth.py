@@ -71,7 +71,8 @@ def profile(t: float) -> dict:
 
 
 def clock_text(mt: float) -> str:
-    s = int(math.floor(abs(mt) + 1e-6)) if mt >= 0 else int(math.ceil(abs(mt) - 1e-6))
+    # SpaceX floors both ways: T-00:00:00 is on screen for the last second of the count
+    s = int(math.floor(abs(mt) + 1e-6))
     return f"T{'-' if mt < 0 else '+'} {s // 3600:02d}:{s % 3600 // 60:02d}:{s % 60:02d}"
 
 

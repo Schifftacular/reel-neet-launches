@@ -20,6 +20,7 @@ from .timeline import TimelineFusion, load
 from .vehicle import VehicleTracker, dynamic_pressure_kpa
 
 NUM_CONF = 0.4
+WEAK_CONF = 0.1
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -31,7 +32,7 @@ class Pipeline:
         self.ms_alias: dict = profile.get("milestone_alias") or {}
         self.ms_drop: set = set(profile.get("milestone_drop") or [])
         self.em = emitter
-        self.clock = ClockModel()
+        self.clock = ClockModel(countdown_floor=profile.get("clock_countdown") == "floor")
         self.veh = VehicleTracker()
         self.fusion = TimelineFusion(timeline, assume) if timeline else None
         self.pool = ThreadPoolExecutor(max_workers=len(self.regions))
@@ -70,14 +71,23 @@ class Pipeline:
         # its parser + lock reject junk (61% -> 98.6% read rate).
         nums = {k: (parse_field(v[0], by_name[k]) if v[1] >= NUM_CONF else None)
                 for k, v in raw.items() if by_name[k].kind == "number"}
+        # Low-confidence reads (Flight 15 booster speed read right at 0.1-0.37) may only continue
+        # an already-acquired track, close to where it is heading. See vehicle.Channel.push.
+        weak = {k: (parse_field(v[0], by_name[k]) if WEAK_CONF <= v[1] < NUM_CONF else None)
+                for k, v in raw.items() if by_name[k].kind == "number"}
         # Starship moves vehicles between boxes mid-flight; route boxes to booster/ship channels.
         labels = {k: v[0] for k, v in raw.items() if by_name[k].kind == "text"}
+        had_stack = "stack" in self.layout.current.values()
+        split = []
         for typ, data in self.layout.update(mt, labels):
             self.em.emit(typ, data, t, mt)
+        if had_stack and "stack" not in self.layout.current.values():
+            split = self.veh.stack_ended(t, mt)
         box_nums = nums
         nums = self.layout.route(nums)
+        weak = self.layout.route(weak)
         # Telemetry is meaningless before liftoff; SpaceX shows 0s anyway.
-        for typ, data in self.veh.update(t, mt, nums):
+        for typ, data in split + self.veh.update(t, mt, nums, weak):
             if typ in ("milestone", "milestone.confirm"):
                 if data["id"] in self.ms_drop:
                     continue
@@ -97,7 +107,7 @@ class Pipeline:
             self.em.emit("clock.tick", {"state": self.clock.state,
                                         "display": fmt_clock(mt) if mt is not None else None,
                                         "confidence": self.clock_conf}, t, mt)
-            s = self.veh.snapshot()
+            s = self.veh.snapshot(t)
             for st in ("s1", "s2"):
                 v, h = s[f"{st}_speed"], s[f"{st}_alt"]
                 if v is None and h is None:
@@ -124,7 +134,7 @@ class Pipeline:
                     slot_of[cfg[f]] = veh or "ignored"
         parsed = dict(box_nums)
         parsed["clock"] = creading
-        s = self.veh.snapshot()
+        s = self.veh.snapshot(t)
         tel = {}
         for st, name in (("s1", "booster/S1"), ("s2", "ship/S2")):
             v, h = s[f"{st}_speed"], s[f"{st}_alt"]
