@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+logs/
+calib/
+work/
+*.mp4
+*.webm
+*.mkv
+frames*/

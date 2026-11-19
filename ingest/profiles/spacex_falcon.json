@@ -1,0 +1,54 @@
+{
+  "name": "spacex_falcon",
+  "notes": "Normalized boxes (x, y, w, h as fractions of frame size) for the SpaceX Falcon webcast overlay. These are STARTING GUESSES matched to the synthetic test overlay. Calibrate against a real frame from a recent Falcon 9 VOD with `python -m ingest.calibrate` before Tuesday and nudge the numbers here.",
+  "regions": [
+    {
+      "name": "clock",
+      "kind": "clock",
+      "x": 0.4,
+      "y": 0.88,
+      "w": 0.2,
+      "h": 0.065
+    },
+    {
+      "name": "s1_speed",
+      "kind": "number",
+      "integer": true,
+      "x": 0.06,
+      "y": 0.88,
+      "w": 0.11,
+      "h": 0.045
+    },
+    {
+      "name": "s1_alt",
+      "kind": "number",
+      "x": 0.2,
+      "y": 0.88,
+      "w": 0.09,
+      "h": 0.045,
+      "decimal_below": 100
+    },
+    {
+      "name": "s2_speed",
+      "kind": "number",
+      "integer": true,
+      "x": 0.71,
+      "y": 0.88,
+      "w": 0.11,
+      "h": 0.045
+    },
+    {
+      "name": "s2_alt",
+      "kind": "number",
+      "x": 0.85,
+      "y": 0.88,
+      "w": 0.09,
+      "h": 0.045,
+      "decimal_below": 100
+    }
+  ],
+  "units": {
+    "speed": "km/h",
+    "alt": "km"
+  }
+}

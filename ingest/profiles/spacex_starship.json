@@ -1,0 +1,128 @@
+{
+  "name": "spacex_starship",
+  "notes": "Gauge/clock boxes calibrated on Flight 14 (2026-11-15), moved up 4 px for Flight 15 (2026-11-19). Panel titles (SUPER HEAVY / STARSHIP) sit BELOW the gauge pairs at y 1041-1051 px and only show while both vehicles have panels (about T+3:16 to T+7:00). Label boxes measured on Flight 15 at T+4:00. When confirmed labels vanish, the mapper jumps to the next schedule row (booster panel gone, ship moves left). Schedule = Flight 14 timing, fallback only.",
+  "regions": [
+    {
+      "name": "clock",
+      "kind": "clock",
+      "x": 0.4302,
+      "y": 0.8972,
+      "w": 0.1375,
+      "h": 0.0333
+    },
+    {
+      "name": "left_speed",
+      "kind": "number",
+      "integer": true,
+      "x": 0.0479,
+      "y": 0.8982,
+      "w": 0.0615,
+      "h": 0.0333
+    },
+    {
+      "name": "left_alt",
+      "kind": "number",
+      "decimal_below": 100,
+      "x": 0.1344,
+      "y": 0.8982,
+      "w": 0.0609,
+      "h": 0.0333
+    },
+    {
+      "name": "right_speed",
+      "kind": "number",
+      "integer": true,
+      "x": 0.8031,
+      "y": 0.8982,
+      "w": 0.0609,
+      "h": 0.0333
+    },
+    {
+      "name": "right_alt",
+      "kind": "number",
+      "decimal_below": 100,
+      "x": 0.8891,
+      "y": 0.8982,
+      "w": 0.0609,
+      "h": 0.0333
+    },
+    {
+      "name": "left_label",
+      "kind": "text",
+      "x": 0.0885,
+      "y": 0.9593,
+      "w": 0.0703,
+      "h": 0.0185
+    },
+    {
+      "name": "right_label",
+      "kind": "text",
+      "x": 0.849,
+      "y": 0.9593,
+      "w": 0.0547,
+      "h": 0.0185
+    }
+  ],
+  "units": {
+    "speed": "km/h",
+    "alt": "km"
+  },
+  "slots": {
+    "left": {
+      "speed": "left_speed",
+      "alt": "left_alt",
+      "label": "left_label"
+    },
+    "right": {
+      "speed": "right_speed",
+      "alt": "right_alt",
+      "label": "right_label"
+    }
+  },
+  "labels": {
+    "booster": [
+      "SUPER HEAVY",
+      "BOOSTER"
+    ],
+    "ship": [
+      "STARSHIP",
+      "SHIP"
+    ]
+  },
+  "schedule": [
+    {
+      "from": null,
+      "to": 139,
+      "left": null,
+      "right": "stack",
+      "note": "one pair for the stacked vehicle"
+    },
+    {
+      "from": 139,
+      "to": 196,
+      "left": null,
+      "right": "ship",
+      "note": "hot staging; booster not shown"
+    },
+    {
+      "from": 196,
+      "to": 433,
+      "left": "booster",
+      "right": "ship"
+    },
+    {
+      "from": 433,
+      "to": null,
+      "left": "ship",
+      "right": null,
+      "note": "booster panel gone, ship moves left"
+    }
+  ],
+  "milestone_alias": {
+    "ses1": "stage_sep"
+  },
+  "milestone_drop": [
+    "entry_start",
+    "entry_end"
+  ]
+}

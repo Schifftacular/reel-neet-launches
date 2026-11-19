@@ -1,0 +1,6 @@
+opencv-python-headless
+pytesseract
+numpy
+pillow
+# optional, for --source obs
+obsws-python

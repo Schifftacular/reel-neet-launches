@@ -1,0 +1,18 @@
+{
+  "mission": "SAMPLE Falcon 9 (Starlink-style, droneship landing)",
+  "notes": "Placeholder nominal timeline. The real one should come from the runtime rundown for Tuesday's mission. 'ocr': false marks milestones the overlay telemetry cannot reveal, so they are assumed at nominal time.",
+  "milestones": [
+    {"id": "liftoff",       "label": "Liftoff",                    "t": 0},
+    {"id": "maxq",          "label": "Max-Q",                      "t": 72},
+    {"id": "meco",          "label": "Main engine cutoff (MECO)",  "t": 147},
+    {"id": "stage_sep",     "label": "Stage separation",           "t": 151, "ocr": false},
+    {"id": "ses1",          "label": "Second stage engine start",  "t": 158},
+    {"id": "fairing_sep",   "label": "Fairing deploy",             "t": 190, "ocr": false},
+    {"id": "entry_start",   "label": "Entry burn start",           "t": 375},
+    {"id": "entry_end",     "label": "Entry burn complete",        "t": 395},
+    {"id": "landing_start", "label": "Landing burn start",         "t": 480},
+    {"id": "landing",       "label": "Booster landing",            "t": 505},
+    {"id": "seco1",         "label": "Second stage cutoff (SECO-1)", "t": 520},
+    {"id": "deploy",        "label": "Payload deploy",             "t": 3900, "ocr": false}
+  ]
+}
